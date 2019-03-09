@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>E-commerce Example Application</title>
@@ -12,20 +13,26 @@
         <div class="container">
             <br>
             <nav id="top-navigation" class="well well-sm flex flex-row align-center">
-                <a href="#"><strong>E-commerce Inc.</strong></a>
+                <a @click.prevent="isShowingCart = flase" href="#">
+                    <strong>E-commerce Inc.</strong>
+                </a>
 
                 <div class="text-right pull-right cart-info">
                     <span class="stats">
+                        {{cart.items.length}}
+                        <template v-if="cart.items.length ==1">item</template>
+                        <template v-else>items</template>
+                        in cart, Totalling {{cartTotal | currency}}
                     </span>
-                    <button class="btn btn-primary">View Cart</button>
+                    <button @click="isShowingCart = true" class="btn btn-primary">View Cart</button>
                 </div>
 
 
-                
+
             </nav>
 
-            <div id="products" class="row list-group">
-                <div v-for="product in products"  class="item col-xs-4">
+            <div v-if="!isShowingCart" id="products" class="row list-group">
+                <div v-for="product in products" class="item col-xs-4">
                     <div class="thumbnail">
                         <img class="group list-group-image" src="http://placehold.it/400x250/000/fff">
                         <div class="caption">
@@ -39,13 +46,12 @@
                                 </div>
 
                                 <div class="col-xs-8 flex flex-row align-center justify-right">
-                                    <div class="number-in-stock"
-                                    :class="{few: product.inStock < 10 , none: product.inStock==0 }">
+                                    <div class="number-in-stock" :class="{few: product.inStock < 10 , none: product.inStock==0 }">
                                         {{product.inStock}} in stock
                                     </div>
 
 
-                                    <button class="btn btn-success" :disabled="product.inStock==0">Add ro Cart</button>
+                                    <button @click="addProductToCart(product)" class="btn btn-success" :disabled="product.inStock==0">Add to Cart</button>
 
 
 
@@ -57,10 +63,56 @@
 
                 </div>
             </div>
+            <div v-else>
+                <table v-if="cart.items.length >0" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in cart.items">
+                            <td>{{item.product.name}}</td>
+                            <td>{{item.quantity}}</td>
+                            <td>{{item.quantity * item.product.price | currency}}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="text-right">
+                                <strong>Total</strong>
+                            </td>
+                            <td>{{cartTotal | currency}}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="text-right">
+                                <strong>Taxes</strong>
+                            </td>
+                            <td>{{taxAmount | currency}}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="text-right">
+                                <strong>Grand Total</strong>
+                            </td>
+                            <td>{{cartTotal + taxAmount | currency}}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="text-right">
+                                <button class="btn btn-success">Checkout</button>
+                            </td>
+                            <td></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <p v-else>You Cart Is currently empty</p>
+            </div>
         </div>
     </div>
 
     <script src="js/vue.js"></script>
     <script src="js/app.js"></script>
 </body>
+
 </html>

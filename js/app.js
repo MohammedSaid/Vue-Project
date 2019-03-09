@@ -1,6 +1,14 @@
 new Vue({
     el: '#app',
     data: {
+        isShowingCart: false,
+        cart:{
+            items:[
+
+            ]
+        }
+            
+        ,    
         products: [
             {
                 id: 1,
@@ -55,5 +63,26 @@ new Vue({
              });
              return formatter.format(value);
          }
-     } 
+     },
+     methods:{
+         addProductToCart: function(product){
+             this.cart.items.push({
+                product: product,
+                quantity: 1
+             });
+             product.inStock--;
+         }
+     },
+     computed:{
+         cartTotal: function(){
+             var total=0;
+             this.cart.items.forEach(function(item){
+                total += item.quantity * item.product.price;
+             });
+             return total;
+         },
+         taxAmount:function(){
+             return ((this.cartTotal *10)/100);
+         }
+     }
 });
